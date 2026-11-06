@@ -15,7 +15,7 @@ Raspberry :5000  Manager.py + fair_api.py   (repo adelpra2527vi4/Building_Manage
 - Funnel espone solo `/fair`; dashboard e comandi (`/`, `/api/*`) non sono raggiungibili da internet.
 - `/fair-admin/` (genera QR, revoca) risponde solo da LAN e mai con header Funnel.
 - Token: `v1.<exp_epoch>.<hmac>` firmato con segreto in `.fair_secret` (o env `FAIR_SECRET`), nel frammento URL del QR: `#t=TOKEN&a=https://host.ts.net`. `api.js` accetta solo `a` https su `*.ts.net`.
-- CORS: solo origin in `FAIR_ORIGINS` (default `https://adelpra2527vi4.github.io`); preflight OPTIONS senza auth e senza dati.
+- CORS: solo origin in `FAIR_ORIGINS` (default `https://its-gds.github.io`); preflight OPTIONS senza auth e senza dati.
 
 ## Contratto API (`GET /fair/api/state`, ogni ~2 s, cache server 1.5 s)
 ```
@@ -39,7 +39,7 @@ Sorgenti lato Pi: `api_zone_layers`, `_planimetrie_list`, `_spettro_nodes` (zone
 ## Fatto
 - API sola lettura, token, CORS, rate limit, pannello QR — testati con curl sul Pi (401 senza token, preflight 204, origin estranea senza header CORS, admin 404 con header Funnel).
 - Web app completa, provata in Chrome headless con `?demo`.
-- Pages attivo: https://adelpra2527vi4.github.io/BuildingManager_APP/
+- Pages attivo: https://its-gds.github.io/BuildingManager_APP/
 - Fix installazione pulita: senza codice cliente ogni pagina dava 500.
 
 ## Da fare (prossimo passo in alto)

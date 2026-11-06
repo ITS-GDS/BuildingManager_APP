@@ -5,12 +5,12 @@
 **Il tuo edificio, in tempo reale, sul telefono.**
 Mappa live di temperatura, CO₂, umidità e luce, con spettro colore e controllo delle luci.
 
-[![Deploy](https://github.com/adelpra2527vi4/BuildingManager_APP/actions/workflows/pages.yml/badge.svg)](https://github.com/adelpra2527vi4/BuildingManager_APP/actions/workflows/pages.yml)
+[![Deploy](https://github.com/ITS-GDS/BuildingManager_APP/actions/workflows/pages.yml/badge.svg)](https://github.com/ITS-GDS/BuildingManager_APP/actions/workflows/pages.yml)
 ![Stack](https://img.shields.io/badge/stack-HTML%20%C2%B7%20CSS%20%C2%B7%20JS%20vanilla-4c8c4a)
 ![Build](https://img.shields.io/badge/build-nessuna-informational)
 ![Licenza](https://img.shields.io/badge/licenza-MIT-blue)
 
-[**▶ Demo live**](https://adelpra2527vi4.github.io/BuildingManager_APP/?demo) · [Avvio rapido](docs/AVVIO_RAPIDO.md) · [Architettura](docs/PLAN.md)
+[**▶ Demo live**](https://its-gds.github.io/BuildingManager_APP/?demo) · [Avvio rapido](docs/AVVIO_RAPIDO.md) · [Architettura](docs/PLAN.md)
 
 <!-- Aggiungi qui uno screenshot o una GIF: <img src="docs/screenshot.png" width="320" alt="Building Live"> -->
 
@@ -34,7 +34,7 @@ Mappa live di temperatura, CO₂, umidità e luce, con spettro colore e controll
 ## 🚀 Provalo in 30 secondi
 
 ```bash
-git clone https://github.com/adelpra2527vi4/BuildingManager_APP
+git clone https://github.com/ITS-GDS/BuildingManager_APP
 cd BuildingManager_APP
 python -m http.server 8000
 ```

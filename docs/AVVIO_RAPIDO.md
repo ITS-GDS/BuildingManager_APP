@@ -17,7 +17,7 @@ browser (PC/telefono) -> questa cartella servita da un web server statico
 
 ## 1. Clonare e servire
 ```bash
-git clone https://github.com/adelpra2527vi4/BuildingManager_APP
+git clone https://github.com/ITS-GDS/BuildingManager_APP
 cd BuildingManager_APP
 python -m http.server 8080          # alternativa: npx serve -l 8080
 ```
