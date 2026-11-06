@@ -1,26 +1,90 @@
-# Building Live (web app da fiera)
+<div align="center">
 
-> Stato del lavoro, architettura, contratto API e prossimi passi: vedi [PLAN.md](PLAN.md).
+# 🏢 Building Live
 
-Web app statica (HTML/CSS/JS, nessuna build) per vedere da smartphone la mappa del Building Manager con dati live: temperatura, CO₂, umidità, luce, potenza; scheda zona con aria animata (CO₂) e spettro/colore della luce. Pubblicata con GitHub Pages; i dati arrivano dal Raspberry (`Manager-raspi`, modulo `fair_api.py`) tramite Tailscale Funnel.
+**Il tuo edificio, in tempo reale, sul telefono.**
+Mappa live di temperatura, CO₂, umidità e luce, con spettro colore e controllo delle luci.
 
-## Come funziona l'accesso
+[![Deploy](https://github.com/adelpra2527vi4/BuildingManager_APP/actions/workflows/pages.yml/badge.svg)](https://github.com/adelpra2527vi4/BuildingManager_APP/actions/workflows/pages.yml)
+![Stack](https://img.shields.io/badge/stack-HTML%20%C2%B7%20CSS%20%C2%B7%20JS%20vanilla-4c8c4a)
+![Build](https://img.shields.io/badge/build-nessuna-informational)
+![Licenza](https://img.shields.io/badge/licenza-MIT-blue)
 
-1. Dal pannello `http://<ip-raspberry>:5000/fair-admin/` (solo rete locale) si genera un **QR** con un token firmato a scadenza.
-2. Il QR contiene `https://<pages>/#t=TOKEN&a=https://<host>.ts.net`: il token sta nel frammento, quindi non finisce nei log dei server.
-3. La web app lo salva, ripulisce l'URL e chiama `/fair/api/*` con `Authorization: Bearer`. Senza token valido le letture dipendono dal Pi: con `FAIR_OPEN=1` (test in LAN) si vede tutto, i comandi (dimmer luci) richiedono sempre il token.
-4. "Revoca tutti" nel pannello cambia il segreto e invalida ogni QR emesso.
+[**▶ Demo live**](https://adelpra2527vi4.github.io/BuildingManager_APP/?demo) · [Avvio rapido](docs/AVVIO_RAPIDO.md) · [Architettura](docs/PLAN.md)
 
-Limite: chi riceve il link lo può inoltrare finché il token non scade. Per una fiera è sufficiente; la scadenza è nel pannello (1–72 h).
+<!-- Aggiungi qui uno screenshot o una GIF: <img src="docs/screenshot.png" width="320" alt="Building Live"> -->
 
-## Prova senza Raspberry
+</div>
 
-`python -m http.server 8000` e apri `http://localhost:8000/?demo` (dati simulati).
+---
 
-## Pubblicazione
+## ✨ Funzionalità
 
-Push su `main` → il workflow `.github/workflows/pages.yml` pubblica. In Settings → Pages scegli "GitHub Actions" come sorgente.
+| | |
+|---|---|
+| 🗺️ **Pianta interattiva** | Zone colorate per metrica (temperatura, CO₂, umidità, luce), una tab per piano |
+| 📈 **Storico** | Scheda per zona con valore, sparkline e grafico scorrevole |
+| 🌬️ **Aria** | CO₂ con giudizio sulla qualità, persone stimate dal bilancio di massa, avviso porta/finestra aperta |
+| 🌈 **Luce** | Spettro a 8 canali (AS7341) su curva a colori reali, temperatura di colore |
+| 💡 **Luci** | Dimmer e colore delle lampade direttamente dal telefono |
+| 🔌 **Relè** | Stato di HVAC, ventola e umidificazione |
+| 🔒 **Accesso con QR** | Token firmato a scadenza, revocabile in un click |
+| 🧪 **Modalità demo** | Dati simulati, nessun hardware necessario |
 
-## Lato Raspberry (CORS e Funnel)
+## 🚀 Provalo in 30 secondi
 
-Repo server: [Building_Manager](https://github.com/adelpra2527vi4/Building_Manager) (`fair_api.py`, `setup_fair.sh`, checklist fiera nel suo README). Avvio in LAN senza Tailscale: [AVVIO_RAPIDO.md](AVVIO_RAPIDO.md). In breve: `FAIR_ORIGINS` = origin di Pages (es. `https://utente.github.io`), Funnel solo su `/fair`.
+```bash
+git clone https://github.com/adelpra2527vi4/BuildingManager_APP
+cd BuildingManager_APP
+python -m http.server 8000
+```
+
+Apri <http://localhost:8000/?demo>. Serve `http://`: aprire `index.html` con doppio clic non funziona (moduli ES).
+
+## 🧩 Come funziona
+
+```mermaid
+flowchart LR
+    P["📱 Smartphone"] -- "scansiona QR" --> G["GitHub Pages<br/>(questa app, statica)"]
+    P -- "fetch + Bearer token" --> F["Tailscale Funnel<br/>solo /fair"]
+    F --> R["🍓 Raspberry<br/>Manager.py + fair_api.py"]
+    R --- S["Sensori · Luci · Relè"]
+```
+
+1. Il pannello `/fair-admin/` (solo rete locale) genera un **QR** con un token firmato a scadenza.
+2. Il QR apre `https://<pages>/#t=TOKEN&a=https://<host>.ts.net`. Il token sta nel frammento dell'URL, quindi non finisce nei log dei server.
+3. L'app salva il token, ripulisce l'URL e interroga `/fair/api/state` ogni ~2 s.
+4. **Revoca tutti** cambia il segreto e invalida ogni QR emesso.
+
+Il server vive in un altro repo: [Building_Manager](https://github.com/adelpra2527vi4/Building_Manager) (`fair_api.py`, `setup_fair.sh`).
+
+## 🛡️ Sicurezza
+
+- Funnel espone solo `/fair`: dashboard e comandi non sono raggiungibili da internet.
+- I comandi (es. dimmer luci) richiedono sempre un token valido; `FAIR_OPEN=1` apre solo le **letture**, per test in LAN.
+- CORS limitato agli origin in `FAIR_ORIGINS`; rate limit lato server.
+- `api.js` accetta come indirizzo solo `https` su `*.ts.net`.
+- Limite noto: chi riceve il link può inoltrarlo fino alla scadenza del token (1–72 h).
+
+## 🗂️ Struttura
+
+```
+index.html          markup
+css/app.css         stile
+js/main.js          stato, polling, schede zona e pannelli
+js/api.js           sessione/token e chiamate al Raspberry
+js/map.js           pianta e poligoni delle zone
+js/fx.js            spettro, contatori animati, sparkline
+js/scales.js        scale colore e colorimetria
+js/occupancy.js     stima persone dalla CO₂
+js/demo.js          dati simulati (?demo)
+docs/               piano, contratto API, avvio rapido
+```
+
+## 📦 Pubblicazione
+
+Push su `main`: il workflow [`pages.yml`](.github/workflows/pages.yml) pubblica su GitHub Pages. In *Settings → Pages* scegli **GitHub Actions** come sorgente.
+
+## 📄 Licenza
+
+[MIT](LICENSE)

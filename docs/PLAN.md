@@ -32,7 +32,7 @@ Sorgenti lato Pi: `api_zone_layers`, `_planimetrie_list`, `_spettro_nodes` (zone
 ## File
 - `index.html`, `css/app.css`
 - `js/main.js` stato, polling, scheda zona (valore + storico) e pannelli Aria/Luce/Luci · `js/api.js` sessione/token, storico, comando luci · `js/map.js` pianta+poligoni
-- `js/fx.js` SpectrumChart, countTo, sparkline (AirField e ChromaChart non più usati) · `js/scales.js` scale colore, colorimetria · `js/demo.js` dati simulati
+- `js/fx.js` SpectrumChart, countTo, sparkline · `js/scales.js` scale colore, colorimetria · `js/demo.js` dati simulati
 - `.github/workflows/pages.yml` deploy su push a `main`
 - Lato Pi (repo Building_Manager): `fair_api.py`, `setup_fair.sh`, `deploy/hvac.service`, modifica a `_require_customer_code` in Manager.py
 
@@ -43,7 +43,6 @@ Sorgenti lato Pi: `api_zone_layers`, `_planimetrie_list`, `_spettro_nodes` (zone
 - Fix installazione pulita: senza codice cliente ogni pagina dava 500.
 
 ## Da fare (prossimo passo in alto)
-1. ~~Commit/push lato Building_Manager~~ fatto (fair_api, setup_fair, deploy, dimmer luci).
 2. (In attesa: Pi fiera e Tailscale non ancora pronti; nel frattempo uso in LAN, vedi AVVIO_RAPIDO.md.) Sul Pi della fiera: `./setup_fair.sh` (Tailscale + Funnel su `/fair`), impostare `FAIR_PUBLIC_URL` in `fair.env`, riavviare `hvac.service`.
 3. Abilitare HTTPS e attributo "funnel" nel pannello admin Tailscale.
 4. Prova end-to-end da smartphone fuori dalla LAN con un QR vero.
@@ -54,12 +53,3 @@ Sorgenti lato Pi: `api_zone_layers`, `_planimetrie_list`, `_spettro_nodes` (zone
 - Funnel pubblica il Raspberry su internet (solo `/fair`, token + rate limit). QR inoltrabile fino alla scadenza token (1–72 h); "Revoca tutti" cambia il segreto.
 - Le planimetrie non sono in Git: sul Pi della fiera vanno caricate dall'app.
 - Il QR usa qrcode-generator da cdnjs: serve internet sul dispositivo che apre `/fair-admin/`.
-
-## Riprendere da casa
-```
-git clone https://github.com/adelpra2527vi4/BuildingManager_APP
-git clone https://github.com/adelpra2527vi4/Building_Manager     # contiene fair_api.py solo dopo il punto 1
-cd BuildingManager_APP && python -m http.server 8000             # apri http://localhost:8000/?demo
-```
-Test API (sul Pi): `T=$(curl -s localhost:5000/fair-admin/token?hours=1 | python3 -c 'import sys,json;print(json.load(sys.stdin)["token"])'); curl -H "Authorization: Bearer $T" localhost:5000/fair/api/state`
-Credenziali e IP del Raspberry non sono in questo repo.
